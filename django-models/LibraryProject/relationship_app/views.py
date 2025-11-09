@@ -1,20 +1,14 @@
-from django.shortcuts import HttpResponse
-from .models import Book, Library
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
+from .models import Book, Library
 
-# Create your views here.
+# ✅ Function-based view — lists all books
 def list_books(request):
-    books = Book.objects.all()
-    
-    output = ""
-    for book in books:
-        output += f"{book.title} by {book.author.name}\n"
+    books = Book.objects.select_related('author').all()
+    return render(request, 'relationship_app/list_books.html', {'books': books})
 
-    if not output:
-        output = "No books available."
-    
-    return HttpResponse(output, content_type="text/plain")
 
+# ✅ Class-based view — shows details of a specific library
 class LibraryDetailView(DetailView):
     model = Library
     template_name = 'relationship_app/library_detail.html'
